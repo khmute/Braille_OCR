@@ -1,33 +1,33 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Resources:
   CodePipelineRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: codepipeline.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: CodePipelinePermissions
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - s3:GetObject
-                  - s3:PutObject
-                  - s3:ListBucket
-                  - codebuild:StartBuild
-                  - codebuild:BatchGetBuilds
-                  - codedeploy:CreateDeployment
-                  - codedeploy:GetDeployment
-                  - ec2:DescribeInstances
-                  - ec2:StartInstances
-                  - iam:PassRole
-                Resource: '*'
+  Type: AWS::IAM::Role
+  Properties:
+    AssumeRolePolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: Allow
+          Principal:
+            Service: codepipeline.amazonaws.com
+          Action: sts:AssumeRole
+    Policies:
+      - PolicyName: CodePipelinePermissions
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+                - s3:ListBucket
+                - codebuild:StartBuild
+                - codebuild:BatchGetBuilds
+                - codedeploy:CreateDeployment
+                - codedeploy:GetDeployment
+                - ec2:DescribeInstances
+                - iam:PassRole
+              Resource: arn:aws:iam::123456789012:role/MySpecificRole
+
   
   CodePipelineArtifactBucket:
     Type: AWS::S3::Bucket
