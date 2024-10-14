@@ -1,16 +1,26 @@
 #!/bin/bash
-# 일반 사용자 권한으로 실행됩니다.
+set -e
 
+echo "Navigating to /home/ubuntu/app..."
 cd /home/ubuntu/app
 
-# 가상환경 생성
+echo "Ownership and permissions of /home/ubuntu/app before creating venv:"
+ls -ld /home/ubuntu/app
+
+echo "Creating virtual environment..."
 python3 -m venv venv
 
-# 가상환경 활성화
+echo "Activating virtual environment..."
 source venv/bin/activate
 
-# pip 업그레이드
+echo "Upgrading pip..."
 pip install --upgrade pip
 
-# 의존성 설치
+echo "Installing dependencies from requirements.txt..."
 if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+echo "Virtual environment setup complete. Python and pip versions:"
+which python
+python --version
+which pip
+pip --version

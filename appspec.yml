@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ubuntu/app  # 경로에서 'ec2-user'를 'ubuntu'로 변경
+    destination: /home/ubuntu/app
 
 permissions:
   - object: /home/ubuntu/app
