@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  CodePipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CodePipelinePermissions
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:*
+                  - codebuild:*
+                  - codedeploy:*
+                  - ec2:*
+                  - iam:PassRole
+                Resource: '*'
+  
+  CodePipelineArtifactBucket:
+    Type: AWS::S3::Bucket
+
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: MyBuildProject
+      Source:
+        Type: CODEPIPELINE
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: "aws/codebuild/standard:4.0"
+        Type: LINUX_CONTAINER
+      ServiceRole: !GetAtt CodePipelineRole.Arn
+
+  MyPipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      RoleArn: !GetAtt CodePipelineRole.Arn
+      ArtifactStore:
+        Type: S3
+        Location: !Ref CodePipelineArtifactBucket
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: SourceAction
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Provider: GitHub
+                Version: 1
+              OutputArtifacts:
+                - Name: SourceArtifact
+              Configuration:
+                Owner: khmute
+                Repo: Braille_OCR
+                Branch: master
+                OAuthToken: !Sub '{{resolve:ssm-secure:/codepipeline/github-oauth-token:1}}'
+              RunOrder: 1
+        - Name: Build
+          Actions:
+            - Name: BuildAction
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              InputArtifacts:
+                - Name: SourceArtifact
+              OutputArtifacts:
+                - Name: BuildArtifact
+              Configuration:
+                ProjectName: !Ref CodeBuildProject
+              RunOrder: 1
