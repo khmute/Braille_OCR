@@ -9,7 +9,7 @@ import os
 import json
 import glob
 import sys
-import local_config
+import L1_OCR.local_config as local_config
 sys.path.append(local_config.global_3rd_party)
 from os.path import join
 from ovotools.params import AttrDict
