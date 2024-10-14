@@ -4,10 +4,18 @@ files:
   - source: /
     destination: /home/ubuntu/app  # 경로에서 'ec2-user'를 'ubuntu'로 변경
 
+permissions:
+  - object: /home/ubuntu/app
+    owner: ubuntu
+    group: ubuntu
+    mode: 755
+    type:
+      - directory
+
 hooks:
   BeforeInstall:
     - location: scripts/before_install.sh
-      runas: ubuntu  # 사용자명을 'ubuntu'로 변경
+      runas: ubuntu 
   AfterInstall:
     - location: scripts/after_install.sh
       runas: ubuntu
