@@ -97,7 +97,7 @@ def L4_TextToBraille(extracted_json):
     return Response(response, content_type='application/json; charset=utf-8')
 
 
-# curl -X POST -F "image=@KakaoTalk_20241008_234355161_04.jpg" http://127.0.0.1:5000/run_ocr_loop
+# curl -X POST -F "image=@kakao/KakaoTalk_20241008_234355161_04.jpg" http://127.0.0.1:5000/run_ocr_loop
 
 
 @app.route('/run_ocr_loop', methods=['POST'])
@@ -110,7 +110,7 @@ def run_ocr_loop():
     # extracted_json = proccess_L3_ContextualErrorCorrection(extracted_json)
     extracted_json['correction']['text'] = extracted_json['prediction']['text']
     with open('test.json', 'w') as f:
-        json.dump(extracted_json, f, ensure_ascii=False, indent=4, encoding='utf-8')
+        json.dump(extracted_json, f, ensure_ascii=False, indent=4)
     extracted_json = proccess_L4_TextToBraille(extracted_json)
     
     response = json.dumps(extracted_json, ensure_ascii=False)
