@@ -7,5 +7,5 @@ python3 -m venv venv
 source venv/bin/activate
 
 # 의존성 설치
-pip install --upgrade pip
+pip3 install --upgrade pip
 if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
