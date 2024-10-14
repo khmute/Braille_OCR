@@ -2,29 +2,18 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ec2-user/app  # 애플리케이션이 배포될 경로
-
-permissions:
-  - object: /home/ec2-user/app
-    owner: ec2-user
-    group: ec2-user
-    mode: 755
-    type:
-      - directory
+    destination: /home/ubuntu/app  # 경로에서 'ec2-user'를 'ubuntu'로 변경
 
 hooks:
   BeforeInstall:
     - location: scripts/before_install.sh
-      runas: ec2-user
-
+      runas: ubuntu  # 사용자명을 'ubuntu'로 변경
   AfterInstall:
     - location: scripts/after_install.sh
-      runas: ec2-user
-
+      runas: ubuntu
   ApplicationStart:
     - location: scripts/start_server.sh
-      runas: ec2-user
-
+      runas: ubuntu
   ApplicationStop:
     - location: scripts/stop_server.sh
-      runas: ec2-user
+      runas: ubuntu
