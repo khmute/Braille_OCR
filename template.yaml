@@ -17,10 +17,15 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - s3:*
-                  - codebuild:*
-                  - codedeploy:*
-                  - ec2:*
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                  - codebuild:StartBuild
+                  - codebuild:BatchGetBuilds
+                  - codedeploy:CreateDeployment
+                  - codedeploy:GetDeployment
+                  - ec2:DescribeInstances
+                  - ec2:StartInstances
                   - iam:PassRole
                 Resource: '*'
   
