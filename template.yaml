@@ -1,4 +1,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  CodeStarConnectionArn:
+    Type: String
+    Description: "The ARN of the CodeStar Connection to GitHub"
+
 Resources:
   CodePipelineRole:
     Type: AWS::IAM::Role
@@ -26,7 +32,22 @@ Resources:
                   - codedeploy:GetDeployment
                   - ec2:DescribeInstances
                   - iam:PassRole
-                Resource: arn:aws:iam::123456789012:role/MySpecificRole
+                Resource: '*'
+
+  CodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: CodeBuildServiceRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/AWSCodeBuildDeveloperAccess
 
   CodePipelineArtifactBucket:
     Type: AWS::S3::Bucket
@@ -39,9 +60,9 @@ Resources:
         Type: CODEPIPELINE
       Environment:
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: "aws/codebuild/standard:4.0"
+        Image: "aws/codebuild/standard:5.0"
         Type: LINUX_CONTAINER
-      ServiceRole: !GetAtt CodePipelineRole.Arn
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
 
   MyPipeline:
     Type: AWS::CodePipeline::Pipeline
@@ -56,16 +77,15 @@ Resources:
             - Name: SourceAction
               ActionTypeId:
                 Category: Source
-                Owner: ThirdParty
-                Provider: GitHub
+                Owner: AWS
+                Provider: CodeStarSourceConnection
                 Version: 1
               OutputArtifacts:
                 - Name: SourceArtifact
               Configuration:
-                Owner: khmute
-                Repo: Braille_OCR
-                Branch: master
-                OAuthToken: !Sub '{{resolve:ssm-secure:/codepipeline/github-oauth-token:1}}'
+                ConnectionArn: !Ref CodeStarConnectionArn
+                FullRepositoryId: 'khmute/Braille_OCR'  # 'GitHub 사용자명/리포지토리명' 형식
+                BranchName: 'master'
               RunOrder: 1
         - Name: Build
           Actions:
