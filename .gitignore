@@ -3,3 +3,4 @@ data/
 kakao/
 khKey.pem
 vego_SSH.pem
+.venv/
