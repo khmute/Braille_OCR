@@ -2,9 +2,9 @@ import os
 import torch
 import numpy as np
 
-from L1_OCR.pytorch_retinanet.loss import FocalLoss
-from L1_OCR.pytorch_retinanet.retinanet import RetinaNet
-from L1_OCR.pytorch_retinanet.encoder import DataEncoder
+from pytorch_retinanet.loss import FocalLoss
+from pytorch_retinanet.retinanet import RetinaNet
+from pytorch_retinanet.encoder import DataEncoder
 
 import local_config
 from braille_utils import label_tools

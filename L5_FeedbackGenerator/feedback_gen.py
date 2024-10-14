@@ -1,5 +1,4 @@
-
-
+import json
 
 
 def calc_avg_size(boxes_by_lines):

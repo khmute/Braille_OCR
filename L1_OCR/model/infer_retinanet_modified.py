@@ -9,7 +9,7 @@ import os
 import json
 import glob
 import sys
-import L1_OCR.local_config as local_config
+import local_config
 sys.path.append(local_config.global_3rd_party)
 from os.path import join
 from ovotools.params import AttrDict
@@ -26,12 +26,12 @@ import zipfile
 import data_utils.data as data
 import braille_utils.letters as letters
 import braille_utils.label_tools as lt
-import L1_OCR.model.create_model_retinanet as create_model_retinanet
-import L1_OCR.pytorch_retinanet as pytorch_retinanet
-import L1_OCR.pytorch_retinanet.encoder
+import model.create_model_retinanet as create_model_retinanet
+import pytorch_retinanet as pytorch_retinanet
+import pytorch_retinanet.encoder
 import braille_utils.postprocess_modified as postprocess
-import L1_OCR.model.refine_json as refine_json
-import L1_OCR.model.test as test
+import model.refine_json as refine_json
+import model.test as test
 
 import uuid
 import datetime
@@ -77,7 +77,7 @@ class BraileInferenceImpl(torch.nn.Module):
         self.model.eval()
         #self.model = torch.jit.script(self.model)
 
-        self.encoder = L1_OCR.pytorch_retinanet.encoder.DataEncoder(**params.model_params.encoder_params)
+        self.encoder = pytorch_retinanet.encoder.DataEncoder(**params.model_params.encoder_params)
         #self.encoder = encoder
         self.valid_mask = torch.tensor(label_is_valid).long()
         self.cls_thresh = cls_thresh
