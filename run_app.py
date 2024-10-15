@@ -6,6 +6,7 @@ import L4_TextToBraille.txt_to_brl as t2b
 
 import logging
 import json
+import PIL.Image
 from flask import Flask, request, jsonify, Response
 
 app = Flask(__name__)
@@ -13,29 +14,31 @@ app = Flask(__name__)
 
 def proccess_L1_OCR(image):
     print("Process L1: OCR")
-    if 'image' not in request.files:
-        return jsonify({'error': '이미지 파일이 요청에 포함되어 있지 않습니다.'}), 400
-
-    image = request.files['image']
-    if image.filename == '':
-        return jsonify({'error': '선택된 파일이 없습니다.'}), 400
-
-    try:
+    
+    try:        
         return run_ocr_app.run_ocr(image)  # 이미지 처리 함수
     except KeyError as e:
+        print('키 오류 발생')
         return jsonify({'error': '키 오류 발생'}), 500
     except Exception as e:
+        print('서버 오류 발생')
         return jsonify({'error': '서버 오류 발생'}), 500
 
 @app.route('/L1_OCR', methods=['POST'])
-def L1_OCR(image):
+def L1_OCR():
+    input_image = request.files['image']
+    image = PIL.Image.open(input_image)
     extracted_json = proccess_L1_OCR(image)
+    print(extracted_json)
     response = json.dumps({'brl': extracted_json['prediction']['brl']}, ensure_ascii=False)
     return Response(response, content_type='application/json; charset=utf-8')
 
 
 def proccess_L2_BrailleToText(extracted_json):
     print("Process L2: BrailleToText")
+    
+    if not isinstance(extracted_json, dict):
+        return jsonify({'error': 'Invalid input format'}), 400
     
     extracted_brl = extracted_json['prediction']['brl']
     
@@ -49,8 +52,8 @@ def proccess_L2_BrailleToText(extracted_json):
         return jsonify({'error': '서버 오류 발생'}), 500
 
 @app.route('/L2_BrailleToText', methods=['POST'])
-def L2_BrailleToText(extracted_json):
-    extracted_json = proccess_L2_BrailleToText(extracted_json)
+def L2_BrailleToText():
+    extracted_json = proccess_L2_BrailleToText(request.get_json())
     response = json.dumps({'text': extracted_json['prediction']['text']}, ensure_ascii=False)
     return Response(response, content_type='application/json; charset=utf-8')
 
@@ -102,7 +105,10 @@ def L4_TextToBraille(extracted_json):
 
 @app.route('/run_ocr_loop', methods=['POST'])
 def run_ocr_loop():
-    image = request.files['image']
+    input_image = request.files['image']
+    if input_image is None:
+        return jsonify({'error': '이미지 파일이 필요합니다'}), 400
+    image = PIL.Image.open(input_image)
     extracted_json = proccess_L1_OCR(image)
     extracted_json = proccess_L2_BrailleToText(extracted_json)
     
