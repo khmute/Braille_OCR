@@ -10,21 +10,19 @@ import PIL.Image
 import L1_OCR.local_config as local_config
 import L1_OCR.model.infer_retinanet_modified as infer_retinanet
 
-def run_ocr(image_path):
+def run_ocr(image):
     model_weights = 'model.t7'
-
-    image = PIL.Image.open(image_path)
     
     recognizer = infer_retinanet.BrailleInference(
         params_fn=os.path.join(local_config.data_path, 'weights', 'param.txt'),
         model_weights_fn=os.path.join(local_config.data_path, 'weights', model_weights),
         create_script=None)
 
-    uuid_int = recognizer.get_uuid()
-    print('UUID: ' + str(uuid_int))
+    # uuid_int = recognizer.get_uuid()
+    # print('UUID: ' + str(uuid_int))
     
     results_dir = local_config.data_path
-    
+
     recognizer.run_and_save(image, results_dir, target_stem=None,
                                         lang='RU', extra_info=None,
                                         draw_refined=recognizer.DRAW_NONE,
@@ -35,4 +33,5 @@ def run_ocr(image_path):
                                         repeat_on_aligned=False,
                                         save_development_info=False)
 
+    print("result: ", recognizer.get_result())
     return recognizer.get_result()

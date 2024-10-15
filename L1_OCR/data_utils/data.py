@@ -105,7 +105,7 @@ class ImagePreprocessor:
         stretch_limit = T.to_tuple(stretch_limit, bias=1)
         new_sz = int(random.uniform(new_width_range[0], new_width_range[1]))
         stretch = random.uniform(stretch_limit[0], stretch_limit[1])
-
+        
         img_max_sz = img.shape[1] #max(img.shape[0]*stretch, img.shape[1]) #img.shape[1]  # GVNC - now it is resizing to max
         new_width = int(img.shape[1]*new_sz/img_max_sz)
         new_width = ((new_width+31)//32)*32
