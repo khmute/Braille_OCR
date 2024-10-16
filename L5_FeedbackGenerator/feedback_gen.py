@@ -1,5 +1,5 @@
 import json
-
+from PIL import Image, ImageDraw
 
 def calc_avg_size(boxes_by_lines):
     total_boxes = 0
@@ -27,7 +27,9 @@ def make_box(avg_box_size_x, avg_box_size_y, avg_gap, prev_box_right, prev_box_t
     return new_box
     
 
-def make_boxes(pred_boxes_by_lines):
+def make_boxes(pred_boxes_by_lines, image_path):
+    image = Image.open(image_path)
+    draw = ImageDraw.Draw(image)
     avg_box_size_x, avg_box_size_y, avg_gap = calc_avg_size(pred_boxes_by_lines)
     
     for i, line in enumerate(pred_boxes_by_lines):
@@ -38,6 +40,7 @@ def make_boxes(pred_boxes_by_lines):
                 prev_box_right = line[j-1][2]
                 prev_box_top = line[j-1][1]
                 new_box = make_box(avg_box_size_x, avg_box_size_y, avg_gap, prev_box_right, prev_box_top)
+                draw.rectangle(new_box, outline='red')
                 line[j] = new_box
         pred_boxes_by_lines[i] = line
     
@@ -90,6 +93,7 @@ def levenshtein_distance_with_path(str1, str2):
 def feedback_gen(extracted_json):
     pred_boxes_by_lines = extracted_json['prediction']['boxes_by_lines']
     make_boxes(pred_boxes_by_lines)
+    
     
     pred_brls = extracted_json['prediction']['brl']
     corr_brls = extracted_json['correction']['brl']

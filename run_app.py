@@ -2,7 +2,7 @@ import L1_OCR.run_ocr_app as run_ocr_app
 import L2_BrailleToText.brl_to_txt as b2t
 import L3_ContextualErrorCorrection.contextual_error_correction as cec
 import L4_TextToBraille.txt_to_brl as t2b
-# import L5_FeedbackGenerator.feedback_gen as fg
+import L5_FeedbackGenerator.feedback_gen as fg
 
 import logging
 import json
@@ -73,8 +73,8 @@ def proccess_L3_ContextualErrorCorrection(extracted_json):
         return jsonify({'error': '서버 오류 발생'}), 500
 
 @app.route('/L3_ContextualErrorCorrection', methods=['POST'])
-def L3_ContextualErrorCorrection(extracted_json):
-    extracted_json = proccess_L3_ContextualErrorCorrection(extracted_json)
+def L3_ContextualErrorCorrection():
+    extracted_json = proccess_L3_ContextualErrorCorrection(request.get_json())
     response = json.dumps({'corrected_text': extracted_json['correction']['text']}, ensure_ascii=False)
     return Response(response, content_type='application/json; charset=utf-8')
 
@@ -95,9 +95,16 @@ def proccess_L4_TextToBraille(extracted_json):
     
 @app.route('/L4_TextToBraille', methods=['POST'])
 def L4_TextToBraille(extracted_json):
-    extracted_json = proccess_L4_TextToBraille(extracted_json)
+    extracted_json = proccess_L4_TextToBraille(request.get_json())
     response = json.dumps({'brl': extracted_json['correction']['brl']}, ensure_ascii=False)
     return Response(response, content_type='application/json; charset=utf-8')
+
+
+@app.route('/L5_FeedbackGenerator', methods=['POST'])
+def L5_FeedbackGenerator():
+    extracted_json = request.get_json()
+    fg.feedback_gen(extracted_json)
+    return jsonify({'message': 'Feedback generated'})
 
 
 # curl -X POST -F "image=@kakao/KakaoTalk_20241008_234355161_04.jpg" http://127.0.0.1:5000/run_ocr_loop
